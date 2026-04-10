@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feriados Nacionais </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Cor de fundo */
+            padding-top: 50px; /* Margem em cima */
+        }
+        .container {
+            max-width: 800px; /* Toma 80% da tela */
+            background: white; /* Fundo branco*/
+            padding: 30px; /* Margem */
+            border-radius: 20px; /*Borda um pouco arredondada */ 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #dd1d8d; /* Cor do texto */
+            margin-bottom: 25px; /* Margem */
+            text-align: center; /*Texto alinhado no centro */
+        }
+
+        thead th {
+            background-color: #ea72c4 !important; /* Cor de fundo rosa */
+            color: white !important; /* Texto Branco */
+            text-align: center; /* Texto alinhado no centro */
+        }
+        tbody td {
+            text-align: center; /* Todos os textos alinhados no centro */
+        }
+    </style>
+</head>
+<body>
+<!-- Criacão da tabela  -->
+    <div class="container">
+        <h2>Feriados Nacionais de 2024</h2>
+
+        <table class="table table-striped table-hover border">
+            <thead class="table-dark">
+                <tr>
+                    <th>Data</th>
+                    <th>Feriado</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // 1. Selecionamos o elemento do HTML onde a lista será injetada
+        const tabela = document.getElementById('corpo-tabela');
+
+        // 2. Criamos a função que consulta a API
+        function carregarFeriados() {
+            // Endereço da API para o ano de 2024
+            fetch('https://brasilapi.com.br/api/feriados/v1/2024')
+                .then(resposta => {
+                    // Transforma o pacote recebido em um Array de Objetos
+                    return resposta.json();
+                })
+                .then(listaFeriados => {
+                    // 3. Percorremos cada item (objeto) do Array recebido
+                    listaFeriados.forEach(feriado => {
+                        
+                        // Criamos uma nova linha (tr) na memória
+                        const linha = document.createElement('tr');
+
+                        // Formatamos a data original (AAAA-MM-DD) para o padrão brasileiro (DD/MM/AAAA)
+                        const dataBr = new Date(feriado.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+
+                        // 4. Preenchemos as colunas (td) da linha com os dados do feriado
+                        linha.innerHTML = `
+                            <td><strong>${dataBr}</strong></td>
+                            <td>${feriado.name}</td>
+                        `;
+
+                        // 5. "Colamos" a linha dentro do corpo da tabela no HTML
+                        tabela.appendChild(linha);
+                    });
+                })
+                .catch(erro => { 
+                    console.error("Erro ao buscar feriados:", erro);
+                });
+        }
+
+        // Executa a função automaticamente assim que a página é aberta
+        carregarFeriados();
+    </script>
+
+</body>
+</html>
